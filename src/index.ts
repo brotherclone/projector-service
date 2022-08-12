@@ -4,9 +4,12 @@ import {ApolloServer, gql} from "apollo-server-express";
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
+const apiPath = "/" + process.env.API_PATH
+const apiPort = process.env.PORT ? process.env.PORT : 3000
 
 const startServer = async () => {
     const app = express()
+    app.use(express.json());
     const httpServer = createServer(app)
     const typeDefs = gql`
         type Board {
@@ -34,14 +37,38 @@ const startServer = async () => {
         resolvers,
     })
 
+    app.get(apiPath+"/test", async (req, res) =>{
+        const boardRes = await prisma.board.findMany()
+        res.json(boardRes)
+    })
+
+    app.post(apiPath+"/test", async (req, res) => {
+        if(req.body){
+            console.log(req.body)
+            const { title, description, path } = req.body
+            const result = await prisma.board.create({
+                data:{
+                    title,
+                    description,
+                    path
+                }
+            })
+            res.json(result)
+        }else{
+            res.json({message: "no request body"})
+        }
+
+    })
+
+
     await apolloServer.start()
     apolloServer.applyMiddleware({
         app,
-        path: '/api'
+        path: apiPath
     })
 
     httpServer.listen({port: process.env.PORT || 4000}, () =>
-        console.log(`Server listening on localhost:4000${apolloServer.graphqlPath}`)
+        console.log('listening on ' +apiPort, 'serving at ' + apiPath )
     )
 }
 
