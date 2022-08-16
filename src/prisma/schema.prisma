@@ -2,13 +2,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Board {
+model User {
   id          Int       @id @default(autoincrement())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  title       String
-  description String?
-  path        String    @unique
+  email       String    @unique
+  firstName   String?
+  lastName    String?
 }
 
 datasource db {
