@@ -27,5 +27,4 @@ const startServer = async () => {
         console.log('listening on ' +apiPort, 'serving at ' + apiPath )
     )
 }
-
 startServer()
