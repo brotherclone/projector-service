@@ -114,6 +114,7 @@ dist
 # Serverless Webpack directories
 .webpack/
 .idea
+/.idea
 *.iws
 
 
