@@ -7,32 +7,15 @@
   "scripts": {
     "dev": "nodemon",
     "build": "rimraf ./build && tsc",
-    "start": "npm run build && node build/index.js",
-    "migrate": "npx prisma migrate dev"
+    "start": "npm run build && node build/index.js"
   },
   "devDependencies": {
-    "@types/graphql": "^14.5.0",
-    "@types/node": "^18.7.2",
-    "@types/validator": "^13.7.5",
-    "@types/ws": "^8.5.3",
     "nodemon": "^2.0.19",
-    "prisma": "^4.2.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@prisma/client": "^4.2.1",
-    "apollo-server-express": "^3.10.1",
-    "class-validator": "^0.13.2",
-    "express": "^4.18.1",
-    "fetch-sparql-endpoint": "^3.1.0",
-    "graphql": "^15.8.0",
-    "graphql-scalars": "^1.18.0",
-    "reflect-metadata": "^0.1.13",
-    "type-graphql": "^1.1.1"
-  },
-  "prisma": {
-    "schema": "src/prisma/schema.prisma"
+    "express": "^4.18.1"
   }
 }
