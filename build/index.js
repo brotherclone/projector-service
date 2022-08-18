@@ -4,6 +4,8 @@ var _graphql = require("@neo4j/graphql");
 
 var _apolloServer = require("apollo-server");
 
+var _utils = require("@apollo/utils.keyvaluecache");
+
 var _templateObject;
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
@@ -25,9 +27,15 @@ neo4jGraphQL.getSchema().then(function (schema) {
       driverConfig: {
         database: 'neo4j'
       }
-    }
+    },
+    cache: new _utils.InMemoryLRUCache({
+      maxSize: Math.pow(2, 20) * 100,
+      ttl: 300000
+    })
   });
-  server.listen().then(function (_ref) {
+  server.listen({
+    port: process.env.PORT || 4001
+  }).then(function (_ref) {
     var url = _ref.url;
     console.log("GraphQL server ready at ".concat(url));
   });
