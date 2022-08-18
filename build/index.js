@@ -1,33 +1,34 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-require('dotenv').config();
-const graphql_1 = require("@neo4j/graphql");
-const apollo_server_1 = require("apollo-server");
-const neo4j = require("neo4j-driver");
-const driver = neo4j.driver(process.env.NEO4J_URI, neo4j.auth.basic(process.env.NEO4J_USERNAME, process.env.NEO4J_PASSWORD));
-const typeDefs = (0, apollo_server_1.gql) `
-    type Movie {
-        title: String
-        actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN)
-    }
 
-    type Actor {
-        name: String
-        movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT)
-    }
-`;
-const neo4jGraphQL = new graphql_1.Neo4jGraphQL({
-    typeDefs,
-    driver
+var _graphql = require("@neo4j/graphql");
+
+var _apolloServer = require("apollo-server");
+
+var _templateObject;
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+require('dotenv').config();
+
+var neo4j = require("neo4j-driver");
+
+var driver = neo4j.driver(process.env.NEO4J_URI, neo4j.auth.basic(process.env.NEO4J_USERNAME, process.env.NEO4J_PASSWORD));
+var typeDefs = (0, _apolloServer.gql)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    interface Thing {\n        description: String!   \n    }\n    type CreativeWork implements Thing {\n        description: String!\n    }\n"])));
+var neo4jGraphQL = new _graphql.Neo4jGraphQL({
+  typeDefs: typeDefs,
+  driver: driver
 });
-neo4jGraphQL.getSchema().then((schema) => {
-    // Create ApolloServer instance to serve GraphQL schema
-    const server = new apollo_server_1.ApolloServer({
-        schema,
-        context: { driverConfig: { database: 'neo4j' } }
-    });
-    // Start ApolloServer
-    server.listen().then(({ url }) => {
-        console.log(`GraphQL server ready at ${url}`);
-    });
+neo4jGraphQL.getSchema().then(function (schema) {
+  var server = new _apolloServer.ApolloServer({
+    schema: schema,
+    context: {
+      driverConfig: {
+        database: 'neo4j'
+      }
+    }
+  });
+  server.listen().then(function (_ref) {
+    var url = _ref.url;
+    console.log("GraphQL server ready at ".concat(url));
+  });
 });
