@@ -1,31 +1,30 @@
-import 'reflect-metadata'
-import * as typeGraphQL from 'type-graphql'
-import { createServer } from "http";
-import express from "express";
-import { ApolloServer } from "apollo-server-express";
-import { prismaContext } from "./contextProvider";
-import { GraphQLScalarType } from 'graphql'
-import { UserResolver } from './resolvers/UserResolver'
+require('dotenv').config()
+import {Neo4jGraphQL} from "@neo4j/graphql"
+import { ApolloServer, gql} from "apollo-server"
 
-const apiPath = "/" + process.env.API_PATH
-const apiPort = process.env.PORT ? process.env.PORT : 3000
+const neo4j = require("neo4j-driver")
+const driver = neo4j.driver(process.env.NEO4J_URI, neo4j.auth.basic(process.env.NEO4J_USERNAME, process.env.NEO4J_PASSWORD));
 
-const startServer = async () => {
-    const app = express()
-    app.use(express.json())
-    const schema = await typeGraphQL.buildSchema({
-        resolvers:[UserResolver]
-    })
-    const httpServer = createServer(app)
-    const apolloServer = new ApolloServer({schema, context: prismaContext})
-    await apolloServer.start()
-    apolloServer.applyMiddleware({
-        app,
-        path: apiPath
-    })
-    httpServer.listen({port: process.env.PORT || 4000}, () =>
-        console.log('listening on ' +apiPort, 'serving at ' + apiPath )
-    )
-}
+const typeDefs = gql`
+    interface Thing {
+        description: String!   
+    }
+    type CreativeWork implements Thing {
+        description: String!
+    }
+`;
 
-startServer()
+const neo4jGraphQL = new Neo4jGraphQL({
+    typeDefs,
+    driver
+});
+
+neo4jGraphQL.getSchema().then((schema) => {
+    const server = new ApolloServer({
+        schema,
+        context: { driverConfig: { database: 'neo4j' } }
+    });
+    server.listen().then(({ url }) => {
+        console.log(`GraphQL server ready at ${url}`);
+    });
+});
